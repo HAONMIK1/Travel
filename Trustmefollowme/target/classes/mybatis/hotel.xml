@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="hotel.Hotel">
+  <insert id="insertHotel" >
+	   insert into hotel
+	   values(hotel_seq.nextval,#{name},#{hprice},#{image},#{image2},#{image3},#{image4},#{image5},#{image6},
+	   			#{address},#{htel},#{facility},#{hcontent},
+	   			#{rname1},#{rname2},#{rname3},#{rname4},
+	   			#{rprice1},#{rprice2},#{rprice3},#{rprice4},
+	   			#{xpos},#{ypos})
+   </insert>
+   
+   
+   <select id="getAllHotel" resultType="hotel.model.HotelBean">
+	  	select * from hotel
+		<if test="WhatColumn == 'name'">
+			where name like #{keyword}
+		</if>
+		<if test="WhatColumn == 'facility'">
+			where facility like #{keyword}
+		</if>
+   </select>
+   
+   
+   <select id="totalCount" resultType="int">
+		select count(*) from hotel
+		<if test="WhatColumn == 'name'">
+			where name like #{keyword}
+		</if>
+		<if test="WhatColumn == 'facility'">
+			where facility like #{keyword}
+		</if>
+	</select>
+	
+	<select id="getHotel" resultType="hotel.model.HotelBean">
+	select * from hotel
+	where hnum = #{hnum} 
+	
+	</select>
+	
+	<update id="updateHotel">
+	update hotel 
+	set name = #{name},hprice = #{hprice},image = #{image},image2 = #{image2},image3 = #{image3},image4 = #{image4},image5 = #{image5},image6 = #{image6},
+	   			address = #{address},htel = #{htel},facility = #{facility},hcontent = #{hcontent},
+	   			rname1 = #{rname1},rname2 = #{rname2},rname3 = #{rname3},rname4 = #{rname4},
+	   			rprice1 = #{rprice1},rprice2 = #{rprice2},rprice3 = #{rprice3},rprice4 = #{rprice4},
+	   			xpos = #{xpos},ypos = #{ypos}
+	where hnum = #{hnum}
+	</update>
+	<delete id="deleteHotel">
+	delete from hotel 
+	where hnum = #{hnum}
+	</delete>
+	
+</mapper>		

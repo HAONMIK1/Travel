@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="board.Board">
+
+	<select id="boardList" resultType="myBoard">
+		SELECT * FROM board
+		<if test="WhatColumn == 'title'">
+			where title like #{keyword}
+		</if>
+		<if test="WhatColumn == 'content'">
+			where content like #{keyword}
+		</if>
+		ORDER BY DBMS_RANDOM.VALUE
+	</select>
+	<select id="MboardList" resultType="myBoard">
+		SELECT * FROM board
+		<if test="WhatColumn == 'title'">
+			where title like #{keyword}
+		</if>
+		<if test="WhatColumn == 'content'">
+			where content like #{keyword}
+		</if>
+		ORDER BY DBMS_RANDOM.VALUE
+		FETCH FIRST 9 ROWS ONLY
+	</select>
+	
+	<insert id="boardInsert">
+		insert into board(num,writer,title,reg_date,content,image,ip,mEmail,jnum,minDate)
+		 values(boardseq.nextval,#{writer},#{title},#{reg_date},#{content},
+		 #{image},#{ip},#{mEmail},#{jnum},#{minDate})
+	</insert>
+		
+	<select id="boardDetail" resultType="myBoard">
+		select * from board where num = #{num}
+	</select>
+	
+	<update id="readCount">
+		update board set readCount = readCount+1 where num = #{num}
+	</update>
+	
+	<select id="oneData" resultType="myBoard">
+		select * from board where num = #{num}
+	</select>
+	
+	<update id="boardUpdate">
+		update board set title = #{title}, image = #{image}, content = #{content}, ip = #{ip} where num = #{num}
+	</update>
+	
+	<delete id="boardDelete">
+		delete from board where num = #{num}
+	</delete>
+	
+	<delete id="chatDelete">
+		delete from chat where b_num = #{num}
+	</delete>
+	
+	<delete id="likesDelete">
+		delete from likes where b_num = #{num}
+	</delete>
+	
+	<select id="findLike" resultType="board.model.LikeBean">
+		select * from likes where b_num = #{b_num} and m_num = #{m_num}
+	</select>
+	
+	<insert id="likeInsert">
+		insert into likes values(likeseq.nextval,#{b_num},#{m_num},0)
+	</insert>
+	
+	
+	<update id="likeDown">
+		update likes set likes = likes-1 where b_num = #{b_num} and m_num = #{m_num}
+	</update>
+	
+	<update id="boardLikeDown">
+		update board set likes = likes-1 where num = #{b_num} and mEmail = #{mEmail}
+	</update>
+	
+	<update id="likeUp">
+		update likes set likes = likes+1 where b_num = #{b_num} and m_num = #{m_num}
+	</update>
+	
+	<update id="boardLikeUp">
+		update board set likes = likes+1 where num = #{b_num} and mEmail = #{mEmail}
+	</update>
+	
+	<select id="likeCount" resultType="int">
+		select count(likes) from likes where b_num = #{b_num} and likes = 1
+	</select>
+	
+	<insert id="chatInsert">
+		insert into chat values(chatseq.nextval,#{b_num},#{writer},#{content},chatseq.currval,#{re_level},#{re_step},
+		#{ip},#{reg_date})
+	</insert>
+	
+	<select id="chatList" resultType="board.model.ChatBean">
+		select * from chat where b_num = #{b_num}
+		order by ref desc, re_step
+	</select>
+	
+	<insert id="replyInsert">
+		insert into chat 
+		values(chatseq.nextval,#{b_num},#{writer},#{content},
+		#{ref},#{re_level}+1,#{re_step}+1,#{ip},#{reg_date})
+	</insert>
+	
+	<update id="replyUpdate">
+		update chat set re_step = re_step+1 where ref = #{ref} and
+		re_level > #{re_level}
+	</update>
+	
+	<delete id="replyDelete">
+		delete from chat where ref = #{ref} and re_level = #{re_level} and re_step = #{re_step} and b_num = #{b_num}
+	</delete>
+	
+	<delete id="replyAllDelete">
+		delete from chat where ref = #{ref} and b_num = #{b_num}
+	</delete>
+	
+	<select id="getData" resultType="board.model.ChatBean">
+		select * from chat where chatnum = #{chatnum}
+	</select>
+	
+	<update id="chatUpdate">
+		update chat set content = #{content} where  ref = #{ref} and re_level = #{re_level} and re_step = #{re_step} and b_num = #{b_num}
+	</update>
+	
+	<select id="getContext" resultType="board.model.ChatBean">
+		select content from chat where ref = #{ref} and re_level = #{re_level} and re_step = #{re_step} and b_num = #{b_num}
+	</select>
+	
+	<select id="likesList" resultType="myBoard">
+		select * from board order by likes desc
+	</select>
+
+	<select id="readcountList" resultType="myBoard">
+		select * from board order by readcount desc
+	</select>
+	
+	<select id="numList" resultType="myBoard">
+		select * from board
+		order by num
+	</select>
+</mapper>

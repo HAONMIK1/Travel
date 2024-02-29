@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="cafe.Cafe">
+	<select id="getTotalCount" resultType="int">
+		select count(*) from cafe
+		<if test="WhatColumn=='name'">
+		where name like #{keyword}
+		</if>
+		<if test="WhatColumn=='address'">
+		where address like #{keyword}
+		</if>
+	</select>
+	
+	<select id="getAllCafe" resultType="cafe.model.CafeBean">
+		select * from cafe
+		<if test="WhatColumn=='name'">
+		where name like #{keyword}
+		</if>
+		<if test="WhatColumn=='address'">
+		where address like #{keyword}
+		</if>
+	</select>
+	
+	<select id="getCafeDetailByCnum" resultType="cafe.model.CafeBean">
+		select * from cafe 
+		where cnum=#{cnum}
+	</select>
+	
+	<insert id="insertCafe">
+		insert into cafe(cnum,name,xpos,
+		ypos,address,ctel1,ctel2,ctel3,
+		c_date,ctime1,ctime2,image,image2,
+		image3,image4,image5) 
+		values(cafeseq.nextval,#{name},
+		#{xpos},#{ypos},#{address},
+		#{ctel1},#{ctel2},#{ctel3},
+		#{c_date},#{ctime1},#{ctime2},
+		#{image},#{image2},#{image3},
+		#{image4},#{image5})
+	</insert>
+	
+	<delete id="deleteCafe">
+		delete from cafe 
+		where cnum=#{cnum}
+	</delete>
+	
+	<update id="updateCafe">
+		update cafe set name=#{name}, 
+		xpos=#{xpos}, ypos=#{ypos}, 
+		address=#{address}, ctel1=#{ctel1}, 
+		ctel2=#{ctel2}, ctel3=#{ctel3}, 
+		c_date=#{c_date}, ctime1=#{ctime1}, 
+		ctime2=#{ctime2}, image=#{image}, 
+		image2=#{image2}, image3=#{image3}, 
+		image4=#{image4}, image5=#{image5} 
+		where cnum=#{cnum}
+	</update>
+</mapper>		

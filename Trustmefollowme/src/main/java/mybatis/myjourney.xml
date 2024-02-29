@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="myjourney.Myjourney"> 
+	<!-- AutoList Query Start --> 
+	<insert id="insertjourney">
+		insert into myjourney (jnum,id,xpos,ypos,cate,ref,turn,jdate)
+		values(#{jnum},#{id},#{xpos},#{ypos},#{cate},#{ref},#{turn},#{jdate})
+	</insert>
+
+	<select id="myjSelect" resultType="myjourney.model.MyJourneyBean" >
+	SELECT
+    m.jnum, m.id, m.xpos, m.ypos, m.cate, m.ref, m.turn, m.jdate,
+    COALESCE(s.name, r.name, h.name, c.name) AS name,
+    COALESCE(s.address, r.address, h.address, c.address) AS address,
+    COALESCE(s.image, r.image, h.image, c.image) AS image,
+    COALESCE(s.image2, r.image2, h.image2, c.image2) AS image2,
+    COALESCE(s.image3, r.image3, h.image3, c.image3) AS image3,
+    COALESCE(s.image4, r.image4, h.image4, c.image4) AS image4,
+    COALESCE(s.image5, r.image5, h.image5, c.image5) AS image5
+	FROM
+    myjourney m
+	LEFT JOIN spot s ON m.ref = s.snum AND m.cate = 'spot'
+	LEFT JOIN rest r ON m.ref = r.rnum AND m.cate = 'restaurant'
+	LEFT JOIN hotel h ON m.ref = h.hnum AND m.cate = 'hotel'
+	LEFT JOIN cafe c ON m.ref = c.cnum AND m.cate = 'cafe'
+	WHERE
+    m.id = #{id} and m.jdate = #{jdate} and jnum=#{jnum}
+   order by m.turn 
+		</select>
+	<select id="myjDaySelect" resultType="myjourney.model.MyJourneyBean" >
+	SELECT DISTINCT jdate FROM myjourney WHERE id = #{id} and jnum= #{jnum} order by jdate 
+	</select>
+
+	<select id="getAllMyJourneyByJdate" resultType="myjourney.model.MyJourneyBean">
+		SELECT
+		m.jnum AS jnum, m.xpos AS xpos, m.ypos AS ypos, m.cate AS cate, m.ref AS ref, m.jdate AS jdate,
+		COALESCE(s.name, r.name, h.name, c.name) AS name,
+		COALESCE(s.address, r.address, h.address, c.address) AS address
+		FROM
+		myjourney m
+		LEFT JOIN spot s ON m.ref = s.snum AND m.cate = 'spot'
+		LEFT JOIN rest r ON m.ref = r.rnum AND m.cate = 'restaurant'
+		LEFT JOIN hotel h ON m.ref = h.hnum AND m.cate = 'hotel'
+		LEFT JOIN cafe c ON m.ref = c.cnum AND m.cate = 'cafe'
+		WHERE
+		m.jdate = #{jdate} and turn = 0	and jnum=#{jnum}
+		order by m.jnum
+	</select>
+	  <delete id="deleteMjCart">
+      delete from myjourney
+      where turn=#{turn} and id=#{id}
+   </delete>
+   
+   <delete id="deleteMyjourney">
+      delete from myjourney
+      where id=#{id} and jnum=#{jnum}
+   </delete>
+	
+	<update id="saveMyJourney">
+		update myjourney set jnum = jnum+1
+		where id= #{id} and jnum= 0
+	</update>
+	
+	<select id="searchTurnMore" resultType="int">
+		select count(*) from myjourney
+		where id=#{id} and turn>0
+	</select>
+	
+	<update id="updateMJList">
+		update myjourney set jnum = jnum+1
+		where id=#{id} and jnum>0
+	</update>
+	<!-- ManualList Query End -->
+
+	<select id="MgetAllMyJourneyByJdate" resultType="myjourney.model.MyJourneyBean">
+      SELECT
+      m.jnum AS jnum, m.xpos AS xpos, m.ypos AS ypos, m.cate AS cate, m.ref AS ref, m.jdate AS jdate, m.turn AS turn,
+      COALESCE(s.name, r.name, h.name, c.name) AS name,
+      COALESCE(s.address, r.address, h.address, c.address) AS address
+      FROM
+      myjourney m
+      LEFT JOIN spot s ON m.ref = s.snum AND m.cate = 'spot'
+      LEFT JOIN rest r ON m.ref = r.rnum AND m.cate = 'restaurant'
+      LEFT JOIN hotel h ON m.ref = h.hnum AND m.cate = 'hotel'
+      LEFT JOIN cafe c ON m.ref = c.cnum AND m.cate = 'cafe'
+      WHERE
+      m.jdate = #{jdate} and jnum=0
+      order by turn
+   </select>
+	 
+	<insert id="MinsertMyJourney">
+		insert into myjourney(jnum,id,xpos,ypos,cate,ref,turn,jdate)
+		<if test="cate=='cafe'">
+		values('0',#{id},#{cb.xpos},#{cb.ypos},#{cate},#{cb.cnum},myj_seq.nextval,#{jdate})
+		</if>
+		<if test="cate=='hotel'">
+		values('0',#{id},#{hb.xpos},#{hb.ypos},#{cate},#{hb.hnum},myj_seq.nextval,#{jdate})
+		</if>
+		<if test="cate=='restaurant'">
+		values('0',#{id},#{rb.xpos},#{rb.ypos},#{cate},#{rb.rnum},myj_seq.nextval,#{jdate})
+		</if>
+		<if test="cate=='spot'">
+		values('0',#{id},#{sb.xpos},#{sb.ypos},#{cate},#{sb.snum},myj_seq.nextval,#{jdate})
+		</if>
+	</insert>
+	
+<select id="getMJDetail" resultType="myjourney.model.MyJourneyBean">
+		SELECT
+		m.jnum, m.id, m.xpos, m.ypos, m.cate, m.ref, m.turn, m.jdate,
+		COALESCE(s.name, r.name, h.name, c.name) AS name,
+		COALESCE(s.address, r.address, h.address, c.address) AS address,
+		COALESCE(s.image, r.image, h.image, c.image) AS image
+		FROM
+		myjourney m
+		LEFT JOIN spot s ON m.ref = s.snum AND m.cate = 'spot'
+		LEFT JOIN rest r ON m.ref = r.rnum AND m.cate = 'restaurant'
+		LEFT JOIN hotel h ON m.ref = h.hnum AND m.cate = 'hotel'
+		LEFT JOIN cafe c ON m.ref = c.cnum AND m.cate = 'cafe'
+		WHERE
+		id=#{id} 
+		and jnum=#{jnum}
+		and jdate=#{jdate}
+		order by
+		to_number(turn)
+	</select> 
+
+	 <select id="getDayListByJnum" resultType="myjourney.model.MyJourneyBean">
+		select DISTINCT jdate from myjourney 
+		where jnum=#{jnum}
+		order by jdate	
+	</select> 
+	<select id="searchJnumZero" resultType="int">
+      select count(*) from myjourney
+      where id=#{id} and jnum=0
+   </select>
+	<!-- board 시작  -->
+   <select id="maxDate" resultType="String">
+      select max(jdate) from myjourney where jnum = #{jnum} and id = #{id}
+   </select>
+
+   <select id="minDate" resultType="String">
+      select min(jdate) from myjourney where jnum = #{jnum} and id = #{id}
+   </select>
+   
+   <select id="boardList" resultType="myjourney.model.MyJourneyBean">
+      SELECT
+       m.jnum, m.id, m.xpos, m.ypos, m.cate, m.ref, m.turn, m.jdate,
+       COALESCE(s.name, r.name, h.name, c.name) AS name,
+       COALESCE(s.address, r.address, h.address, c.address) AS address,
+       COALESCE(s.image, r.image, h.image, c.image) AS image,
+       COALESCE(s.image2, r.image2, h.image2, c.image2) AS image2,
+       COALESCE(s.image3, r.image3, h.image3, c.image3) AS image3,
+       COALESCE(s.image4, r.image4, h.image4, c.image4) AS image4,
+       COALESCE(s.image5, r.image5, h.image5, c.image5) AS image5
+      FROM
+       myjourney m
+      LEFT JOIN spot s ON m.ref = s.snum AND m.cate = 'spot'
+      LEFT JOIN rest r ON m.ref = r.rnum AND m.cate = 'restaurant'
+      LEFT JOIN hotel h ON m.ref = h.hnum AND m.cate = 'hotel'
+      LEFT JOIN cafe c ON m.ref = c.cnum AND m.cate = 'cafe'
+      WHERE
+       m.id = #{id} and jnum = #{jnum}
+      order by jdate, m.turn
+   </select>
+   
+   <select id="getjNum" resultType="myjourney.model.MyJourneyBean">
+      select distinct(jnum) from myjourney where id = #{id} order by jnum
+   </select>
+   
+   <select id="boardListCount" resultType="myjourney.model.MyJourneyBean">
+     select distinct(jdate) from myjourney
+           where jnum = #{jnum} and id = #{mEmail} order by jdate
+   </select>
+   
+   <select id="dateCount" resultType="int">
+      select count(distinct(m.jdate))
+        from board b inner join  myjourney m
+        on m.id = #{mEmail} and m.jnum = #{jnum}
+        order by jdate
+        </select>
+        
+           <select id="getMJNums" resultType="myjourney.model.MyJourneyBean">
+      select DISTINCT jnum from myjourney
+   where id = #{id} 
+   order by jnum
+   </select>
+   
+   <delete id="deleteJnumZero">
+    delete from myjourney
+      where jnum = 0
+   </delete>
+   
+    <select id="searchByJateAndJnumZero" resultType="int">
+      select count(*) from myjourney
+      where id = #{id}
+      and jdate=#{jdate}
+      and jnum = 0
+   </select>
+</mapper>

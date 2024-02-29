@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="spot.Spot">
+
+<select id="spotList" resultType="spot.model.SpotBean">
+	select * from spot 
+		<if test="WhatColumn == 'name'">
+			where name like #{keyword}
+		</if>
+</select>
+<select id="listTotal" resultType="int">
+	select count(*) from spot
+		<if test="WhatColumn == 'name'">
+			where name like #{keyword}
+		</if>
+</select>
+<insert id="spotInsert">
+    insert into spot values(spot_seq.nextval, #{name}, #{xpos}, #{ypos}, #{address}, #{content}, #{image}, #{image2}, #{image3}, #{image4}, #{image5},#{stime})
+</insert>
+
+<select id="spotDetail" resultType="spot.model.SpotBean">
+	select * from spot where snum = #{snum} 
+</select>
+
+<delete id="spotDelete">
+	delete from spot where snum = #{snum}
+</delete>
+
+<update id="spotUpdate">
+	update spot set name=#{name} ,xpos=#{xpos},ypos=#{ypos},address=#{address},content=#{content},
+	image= #{image}, image2=#{image2},image3= #{image3}, image4 = #{image4}, image5=#{image5}, stime = #{stime}
+	where snum = #{snum}
+</update>
+
+</mapper>		

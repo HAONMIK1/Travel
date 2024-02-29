@@ -1,0 +1,15 @@
+member = *.mb
+
+hotel = *.ht
+
+cafe = *.cf
+
+restaurant = *.re
+
+spot = *.sp
+
+board = *.bd
+
+myhotel = *.mh
+
+myjourney = *.mj

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="member.Member">
+	<select id="findEmail" resultType="int">
+
+		select count(*) from member
+		where email = #{email}
+
+	</select>
+
+	<insert id="insertMember">
+		insert into member(num,email,password,name ,birth ,address1, address2, mtel)
+	values(member_seq.nextval,#{email},#{password},#{name},#{birth},#{address1},#{address2},#{mtel})
+	</insert>
+	
+	<select id="getMemberInfo" resultType="member.model.MemberBean">
+	select * from member
+	where email=#{email} and password=#{password}
+	
+	</select>
+	<select id="findPassword" resultType="member.model.MemberBean">
+	select * from member
+	where email = #{email} and name=#{name} and mtel=#{mtel}
+	</select>
+	
+	<select id="getMemberByEmail" parameterType="java.lang.String" resultType="member.model.MemberBean">
+        SELECT * FROM Member WHERE email = #{email}
+    </select>
+    
+    <select id="getAllMember" resultType="member.model.MemberBean">
+    select * from member
+    <if test="WhatColumn == 'name'">
+			where name like #{keyword}
+		</if>
+		<if test="WhatColumn == 'id'">
+			where id like #{keyword}
+		</if>
+    order by num
+    </select>
+    
+    	<select id="getMyjNum" resultType="int">
+	select myjNum from member where email = #{email}
+	</select>
+	
+	<update id="updateMyjNum">
+		update member set myjNum=myjNum+1 where email = #{myemail}
+	</update>
+    <select id="getMemberInfoByMyEmail" resultType="member.model.MemberBean">
+		select * from member where email = #{myemail}
+	</select>
+	
+	<update id="changePw">
+		update member set password=#{password}
+		where email=#{email}
+	</update>
+	
+	<update id="updateProfile">
+		update member set
+		name=#{name},
+		birth=#{birth},
+		address1=#{address1},
+		<if test="address2 != null">
+		    address2=#{address2},
+		</if>
+		mtel=#{mtel},
+		email=#{email}
+		where num=#{num} 
+	</update>
+	
+	 <update id="reduceMyjNum">
+      update member set myjNum=myjNum-1 
+      where email = #{myemail}
+   </update>
+   
+   <select id="totalCount" resultType="int">
+      select count(*) from member
+      <if test="whatColumn == 'name'">
+         where name like #{keyword}
+      </if>
+      <if test="whatColumn == 'email'">
+         where email like #{keyword}
+      </if>
+      </select>
+</mapper>			
